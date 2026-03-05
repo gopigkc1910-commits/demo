@@ -353,6 +353,11 @@ app.get("/api/spotify/health", async (req, res) => {
   });
 });
 
+// Force legacy search pages to main UI page.
+app.get(["/spot_search.html", "/spot_search2.html", "/spot_tracks.html"], (req, res) => {
+  res.redirect(302, "/happyHoli.html");
+});
+
 app.use(express.static(path.join(__dirname)));
 
 app.get("*", (req, res) => {
