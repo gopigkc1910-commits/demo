@@ -1,11 +1,15 @@
 require("dotenv").config();
 
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const fetchImpl = global.fetch || require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const WISHES_FILE = path.join(__dirname, "wishes.json");
+const wishesStore = new Map();
+const ADMIN_PIN = (process.env.ADMIN_PIN || "19102006").trim();
 
 let spotifyToken = "";
 let spotifyTokenExp = 0;
@@ -25,13 +29,51 @@ sanitizeBrokenProxyEnv();
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Pin");
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
   }
   next();
 });
+app.use(express.json({ limit: "1mb" }));
+
+function makeWishId() {
+  return Math.random().toString(36).slice(2, 8);
+}
+
+function trimText(value, maxLen) {
+  return String(value || "").trim().slice(0, maxLen);
+}
+
+function getProvidedAdminPin(req) {
+  const fromHeader = trimText(req.get("x-admin-pin") || "", 64);
+  const fromQuery = trimText(req.query.pin || "", 64);
+  if (fromHeader) return fromHeader;
+  if (fromQuery) return fromQuery;
+  return "";
+}
+
+function loadWishesFromDisk() {
+  try {
+    if (!fs.existsSync(WISHES_FILE)) return;
+    const raw = fs.readFileSync(WISHES_FILE, "utf8");
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) return;
+    for (const wish of list) {
+      if (wish && wish.id) wishesStore.set(String(wish.id), wish);
+    }
+  } catch (_) {}
+}
+
+function persistWishesToDisk() {
+  try {
+    const data = JSON.stringify(Array.from(wishesStore.values()), null, 2);
+    fs.writeFileSync(WISHES_FILE, data, "utf8");
+  } catch (_) {}
+}
+
+loadWishesFromDisk();
 
 function isRealSpotifyCredential(value) {
   const v = (value || "").trim();
@@ -353,9 +395,145 @@ app.get("/api/spotify/health", async (req, res) => {
   });
 });
 
+app.post("/api/wishes", (req, res) => {
+  const body = req.body || {};
+  let id = makeWishId();
+  while (wishesStore.has(id)) id = makeWishId();
+  const festival = trimText(body.festival || "Holi", 40) || "Holi";
+  const friendName = trimText(body.friendName, 80);
+  const defaultMessage = `Wishing you joy and success. Happy ${festival}${friendName ? ", " + friendName : ""}!`;
+  const wish = {
+    id,
+    festival,
+    friendName,
+    message: trimText(body.message || defaultMessage, 400),
+    music: trimText(body.music, 200),
+    theme: trimText(body.theme || "holi", 30) || "holi",
+    views: 0,
+    lastViewedAt: "",
+    createdAt: new Date().toISOString()
+  };
+  wishesStore.set(id, wish);
+  persistWishesToDisk();
+  res.status(201).json({ id, wish });
+});
+
+app.get("/api/wishes/:id", (req, res) => {
+  const id = trimText(req.params.id, 40);
+  const wish = wishesStore.get(id);
+  if (!wish) {
+    return res.status(404).json({ error: "wish_not_found" });
+  }
+  wish.views = Number(wish.views || 0) + 1;
+  wish.lastViewedAt = new Date().toISOString();
+  wishesStore.set(id, wish);
+  persistWishesToDisk();
+  return res.json(wish);
+});
+
+app.get("/api/wishes", (req, res) => {
+  const limitRaw = Number(req.query.limit || 5);
+  const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(20, limitRaw)) : 5;
+  const festivalFilter = trimText(req.query.festival || "", 40);
+  const q = trimText(req.query.q || "", 80).toLowerCase();
+  const items = Array.from(wishesStore.values())
+    .filter((wish) => {
+      if (festivalFilter && wish.festival !== festivalFilter) return false;
+      if (!q) return true;
+      const text = `${wish.friendName || ""} ${wish.message || ""}`.toLowerCase();
+      return text.includes(q);
+    })
+    .sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0))
+    .slice(0, limit)
+    .map((wish) => ({
+      id: wish.id,
+      festival: wish.festival,
+      friendName: wish.friendName,
+      message: wish.message,
+      theme: wish.theme,
+      views: Number(wish.views || 0),
+      lastViewedAt: wish.lastViewedAt || "",
+      createdAt: wish.createdAt
+    }));
+  return res.json({ items, limit, festival: festivalFilter || "", q });
+});
+
+app.delete("/api/wishes/:id", (req, res) => {
+  const id = trimText(req.params.id, 40);
+  const providedPin = getProvidedAdminPin(req);
+  if (!ADMIN_PIN || providedPin !== ADMIN_PIN) {
+    return res.status(401).json({ error: "invalid_admin_pin" });
+  }
+  if (!wishesStore.has(id)) {
+    return res.status(404).json({ error: "wish_not_found" });
+  }
+  wishesStore.delete(id);
+  persistWishesToDisk();
+  return res.json({ ok: true, id });
+});
+
+app.post("/api/ai/greeting", async (req, res) => {
+  const body = req.body || {};
+  const festival = trimText(body.festival || "Holi", 40) || "Holi";
+  const friendName = trimText(body.friendName, 80);
+  const prompt = trimText(body.prompt || `Generate a short ${festival} greeting`, 200);
+  const fallbackMessage = `May your life be filled with vibrant colors of happiness and success. Happy ${festival}${friendName ? ", " + friendName : ""}!`;
+  const hfToken = (process.env.HF_API_TOKEN || "").trim();
+
+  try {
+    const model = "google/flan-t5-base";
+    const response = await fetchImpl(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(hfToken ? { Authorization: `Bearer ${hfToken}` } : {})
+      },
+      body: JSON.stringify({
+        inputs: `${prompt}. Keep it warm, concise, and family friendly.`,
+        parameters: { max_new_tokens: 60, temperature: 0.9 }
+      })
+    });
+
+    if (!response.ok) {
+      return res.json({ message: fallbackMessage, source: "template_fallback" });
+    }
+
+    const data = await response.json();
+    let text = "";
+    if (Array.isArray(data) && data[0] && data[0].generated_text) {
+      text = String(data[0].generated_text || "").trim();
+    } else if (data && typeof data.generated_text === "string") {
+      text = data.generated_text.trim();
+    }
+    if (!text) text = fallbackMessage;
+    return res.json({ message: text, source: "huggingface" });
+  } catch (_) {
+    return res.json({ message: fallbackMessage, source: "template_fallback" });
+  }
+});
+
+app.get("/api/stats", (req, res) => {
+  const byFestival = {};
+  let totalViews = 0;
+  for (const wish of wishesStore.values()) {
+    const f = wish.festival || "Festival";
+    byFestival[f] = Number(byFestival[f] || 0) + 1;
+    totalViews += Number(wish.views || 0);
+  }
+  res.json({
+    totalWishes: wishesStore.size,
+    totalViews,
+    byFestival
+  });
+});
+
 // Force legacy search pages to main UI page.
 app.get(["/spot_search.html", "/spot_search2.html", "/spot_tracks.html"], (req, res) => {
   res.redirect(302, "/happyHoli.html");
+});
+
+app.get("/wish/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "happyHoli.html"));
 });
 
 app.use(express.static(path.join(__dirname)));

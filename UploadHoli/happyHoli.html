@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holi Celebration</title>
+<title>FestivalHub Celebration</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
@@ -130,7 +130,9 @@ canvas {
   align-items: center;
 }
 
-input[type="text"] {
+input[type="text"],
+textarea,
+select {
   flex: 1;
   min-width: 190px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -140,6 +142,12 @@ input[type="text"] {
   color: #1f2937;
   background: rgba(255,255,255,0.96);
   font-family: inherit;
+}
+
+textarea {
+  width: 100%;
+  min-height: 94px;
+  resize: vertical;
 }
 
 button, .file-btn {
@@ -490,6 +498,91 @@ input[type="range"] {
   gap: 8px;
 }
 
+.recent-list {
+  display: grid;
+  gap: 8px;
+}
+
+.recent-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.recent-toolbar input,
+.recent-toolbar select {
+  min-width: 140px;
+}
+
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.recent-main {
+  min-width: 0;
+}
+
+.recent-title {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.recent-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.danger-btn {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+.share-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.share-row button {
+  flex: 1 1 170px;
+}
+
+.countdown-card {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  animation: cardPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+
 .credit-3d {
   margin-top: 8px;
   padding: 16px;
@@ -541,6 +634,39 @@ input[type="range"] {
   opacity: 0.95;
 }
 
+.credit-sub {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.creator-links {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.creator-links a,
+.creator-links button {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.creator-links a:hover,
+.creator-links button:hover {
+  transform: translateY(-1px);
+}
+
 .credit-3d::after {
   content: "";
   position: absolute;
@@ -575,6 +701,21 @@ input[type="range"] {
   .hero {
     grid-column: 1 / span 2;
   }
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  button, .file-btn {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  .hero p {
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
 }
 </style>
 </head>
@@ -589,17 +730,47 @@ input[type="range"] {
     <section class="card hero">
       <div class="hero-top">
         <h1 id="title"></h1>
-        <span class="tag">Holi 2026 Edition</span>
+        <span class="tag" id="festivalTag">FestivalHub 2026</span>
       </div>
-      <p>Create a Holi wish link, play music, and share on phone with stable links.</p>
-      <div class="controls-row" style="margin-top:12px;">
+      <p>Create beautiful festival greetings with music, colors, animation, and mobile-first sharing.</p>
+      <div class="form-grid" style="margin-top:12px;">
         <input id="nameInput" type="text" placeholder="Enter friend name">
+        <select id="festivalInput" aria-label="Festival">
+          <option value="Holi">Holi</option>
+          <option value="Diwali">Diwali</option>
+          <option value="Eid">Eid</option>
+          <option value="Christmas">Christmas</option>
+          <option value="New Year">New Year</option>
+          <option value="Raksha Bandhan">Raksha Bandhan</option>
+        </select>
+        <input id="spotifyInput" type="text" placeholder="Music or song query">
+        <select id="themeInput" aria-label="Theme">
+          <option value="holi">Holi Colors</option>
+          <option value="sunset">Sunset</option>
+          <option value="emerald">Emerald</option>
+          <option value="royal">Royal Night</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="messageInput" placeholder="Enter your custom message"></textarea>
+      </div>
+      <div class="controls-row" style="margin-top:10px;">
         <button class="primary" onclick="generateLink()">Generate Share Link</button>
+        <button onclick="generateAiMessage()">Generate Festival Message</button>
+        <button onclick="clearDraft()">Clear Draft</button>
         <button onclick="fireworks()">Fireworks</button>
         <button onclick="downloadImage()">Download Wish</button>
       </div>
+      <div class="share-row" style="margin-top:10px;">
+        <button onclick="shareWhatsapp()">Share on WhatsApp</button>
+        <button onclick="shareInstagram()">Share on Instagram</button>
+        <button onclick="copyShareLink()">Copy Link</button>
+      </div>
       <div id="shareStatus" class="meta-line" style="margin-top:10px;">Share link not generated yet.</div>
-      <div id="countdown" style="margin-top:8px;"></div>
+      <div id="statsLine" class="meta-line"></div>
+      <div class="countdown-card">
+        <div id="countdown"></div>
+      </div>
       <div id="thought"></div>
     </section>
 
@@ -610,7 +781,7 @@ input[type="range"] {
           <span id="musicIcon">▶</span>
         </button>
         <div style="min-width:0; flex:1;">
-          <div id="musicTrack" class="track-name">Holi Local Mix</div>
+          <div id="musicTrack" class="track-name">Festival Local Mix</div>
           <div id="musicStatus">Ready</div>
         </div>
       </div>
@@ -624,7 +795,6 @@ input[type="range"] {
       <div class="music-actions">
         <label for="musicFile" class="file-btn">Choose Song</label>
         <input id="musicFile" type="file" accept="audio/*">
-        <span>Tip: upload your own song for full-length playback.</span>
       </div>
       <div class="sim-wrap">
         <div class="sim-head">
@@ -638,7 +808,7 @@ input[type="range"] {
           <span class="song-label-title">Song Label</span>
           <span id="songModeChip" class="song-chip">Local Mix</span>
         </div>
-        <div id="songLabelText" class="song-label-text">Holi Local Mix</div>
+        <div id="songLabelText" class="song-label-text">Festival Local Mix</div>
         <div id="songLabelHint" class="song-label-hint">Ready to play</div>
       </div>
       <audio id="audioNative" loop preload="auto" playsinline></audio>
@@ -647,9 +817,7 @@ input[type="range"] {
     <section class="card">
       <h2>Music Search</h2>
       <div class="spotify-row">
-        <input id="spotifyInput" type="text" placeholder="Type song name or paste Spotify track link">
         <button id="spotifySearchBtn" class="primary" onclick="loadSpotify()">Search and Play</button>
-        <button id="spotifyCheckBtn" onclick="checkSpotifyBackendHealth()">Check Music Setup</button>
       </div>
       <div id="spotifyStatus" style="margin-top:8px;">Music search not loaded.</div>
       <div id="backendPill" class="backend-pill warn">Checking backend...</div>
@@ -669,15 +837,39 @@ input[type="range"] {
         <input id="searchSeekBar" class="seek-modern" type="range" min="0" max="100" value="0" aria-label="Search track seek" disabled>
       </div>
       <div id="spotifyResults" class="spotify-results"></div>
-      <div class="meta-line" style="margin-top:10px;">Search mode is preview-based by provider policy. For full songs, use Full Song Timeline via stream or upload.</div>
+    </section>
+
+    <section class="card">
+      <h2>Recent Wishes</h2>
+      <div class="recent-toolbar">
+        <select id="recentFestivalFilter" aria-label="Filter by festival">
+          <option value="">All Festivals</option>
+          <option value="Holi">Holi</option>
+          <option value="Diwali">Diwali</option>
+          <option value="Eid">Eid</option>
+          <option value="Christmas">Christmas</option>
+          <option value="New Year">New Year</option>
+          <option value="Raksha Bandhan">Raksha Bandhan</option>
+        </select>
+        <input id="recentSearchInput" type="text" placeholder="Search name or message">
+        <button onclick="refreshRecentWishes()">Refresh</button>
+      </div>
+      <div id="recentWishes" class="recent-list">
+        <div class="meta-line">No wishes yet. Create one to see it here.</div>
+      </div>
     </section>
 
     <section class="card footer-notes">
-      <div id="deployNote" class="meta-line"></div>
-      <div class="meta-line">Tip: host this page on GitHub Pages or Netlify to make phone links work everywhere.</div>
       <div id="credit3d" class="credit-3d" role="note">
         <span class="credit-name">Made by Gopi Choudhary</span>
-        <small class="credit-tag">Colorverse Signature Edition 2026</small>
+        <small class="credit-tag">FestivalHub Builder <span id="creditYear"></span></small>
+      </div>
+      <div class="credit-sub">Crafted for colorful festivals, mobile sharing, and full-stack learning.</div>
+      <div class="creator-links">
+        <a id="creatorGithub" href="#" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a id="creatorLinkedin" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a id="creatorEmail" href="#">Email</a>
+        <button type="button" onclick="copyHomeLink()">Copy Site Link</button>
       </div>
     </section>
   </div>
@@ -687,21 +879,96 @@ input[type="range"] {
 // ---------- Constants ----------
 const DEPLOY_BASE_URL = ""; // Example: https://yourname.github.io/holi/
 const BACKEND_BASE_URL = ""; // Example: http://localhost:3000 (leave blank for auto-detect)
-
-const HOLI_DATES = {
-  2026: "2026-03-03T00:00:00",
-  2027: "2027-03-23T00:00:00",
-  2028: "2028-03-11T00:00:00",
-  2029: "2029-03-01T00:00:00",
-  2030: "2030-03-20T00:00:00"
+const CREATOR = {
+  github: "https://github.com/gopigkc1910-commits",   // Example: https://github.com/your-handle
+  linkedin: "https://www.linkedin.com/in/gopi19choudhary", // Example: https://www.linkedin.com/in/your-handle
+  email: "gopigkc1910@gmail.com"     // Example: yourname@example.com
 };
 
-const THOUGHTS = [
-  "True friends add color to your life.",
-  "Celebrate happiness like Holi colors.",
-  "Spread joy, color, and kindness.",
-  "Life is brighter with friendship."
-];
+const FESTIVAL_DATES = {
+  "Holi": {
+    2026: "2026-03-03T00:00:00",
+    2027: "2027-03-23T00:00:00",
+    2028: "2028-03-11T00:00:00",
+    2029: "2029-03-01T00:00:00",
+    2030: "2030-03-20T00:00:00"
+  },
+  "Diwali": {
+    2026: "2026-11-08T00:00:00",
+    2027: "2027-10-29T00:00:00",
+    2028: "2028-10-17T00:00:00",
+    2029: "2029-11-05T00:00:00",
+    2030: "2030-10-26T00:00:00"
+  },
+  "Eid": {
+    2026: "2026-03-20T00:00:00",
+    2027: "2027-03-10T00:00:00",
+    2028: "2028-02-27T00:00:00",
+    2029: "2029-02-15T00:00:00",
+    2030: "2030-02-05T00:00:00"
+  },
+  "Christmas": {
+    2026: "2026-12-25T00:00:00",
+    2027: "2027-12-25T00:00:00",
+    2028: "2028-12-25T00:00:00",
+    2029: "2029-12-25T00:00:00",
+    2030: "2030-12-25T00:00:00"
+  },
+  "New Year": {
+    2026: "2026-12-31T00:00:00",
+    2027: "2027-12-31T00:00:00",
+    2028: "2028-12-31T00:00:00",
+    2029: "2029-12-31T00:00:00",
+    2030: "2030-12-31T00:00:00"
+  },
+  "Raksha Bandhan": {
+    2026: "2026-08-28T00:00:00",
+    2027: "2027-08-17T00:00:00",
+    2028: "2028-08-05T00:00:00",
+    2029: "2029-08-24T00:00:00",
+    2030: "2030-08-14T00:00:00"
+  }
+};
+
+const THEME_MAP = {
+  holi: ["#ff4d6d", "#ffbe0b", "#00c897", "#219ebc"],
+  sunset: ["#f97316", "#fb7185", "#f59e0b", "#38bdf8"],
+  emerald: ["#064e3b", "#10b981", "#34d399", "#0f766e"],
+  royal: ["#1e1b4b", "#4c1d95", "#0284c7", "#0f172a"]
+};
+
+const THOUGHTS_BY_FESTIVAL = {
+  "Holi": [
+    "Celebrate with colors, joy, and friendship.",
+    "May every shade bring happiness to your home.",
+    "Spread smiles and vibrant memories this Holi."
+  ],
+  "Diwali": [
+    "May every diya light your path to success.",
+    "Wishing you prosperity, peace, and bright moments.",
+    "Let this Diwali fill your life with hope and joy."
+  ],
+  "Eid": [
+    "Wishing you peace, blessings, and togetherness.",
+    "May this Eid bring harmony and happiness.",
+    "Celebrate love, gratitude, and kindness."
+  ],
+  "Christmas": [
+    "May your Christmas be filled with warmth and joy.",
+    "Wishing you peace, love, and festive cheer.",
+    "Celebrate with family, kindness, and gratitude."
+  ],
+  "New Year": [
+    "Cheers to new beginnings and bold goals.",
+    "May this year bring growth, health, and joy.",
+    "Wishing you a bright and successful New Year."
+  ],
+  "Raksha Bandhan": [
+    "Celebrating the beautiful bond of siblings.",
+    "Wishing love, care, and lifelong protection.",
+    "May this Raksha Bandhan strengthen every bond."
+  ]
+};
 
 const FALLBACK_AUDIO = [
   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
@@ -713,7 +980,12 @@ const FALLBACK_AUDIO = [
 const params = new URLSearchParams(window.location.search);
 const titleEl = document.getElementById("title");
 const nameInput = document.getElementById("nameInput");
+const messageInput = document.getElementById("messageInput");
+const festivalInput = document.getElementById("festivalInput");
+const themeInput = document.getElementById("themeInput");
+const festivalTag = document.getElementById("festivalTag");
 const spotifyInput = document.getElementById("spotifyInput");
+let generatedShareLink = "";
 
 function normalizeBase(urlLike) {
   if (!urlLike) return "";
@@ -744,22 +1016,32 @@ function apiCandidates() {
 }
 
 function typeTitle(text) {
+  if (window.__titleTimer) clearInterval(window.__titleTimer);
   titleEl.textContent = "";
   let i = 0;
-  const t = setInterval(() => {
+  window.__titleTimer = setInterval(() => {
     titleEl.textContent += text.charAt(i);
     i += 1;
-    if (i >= text.length) clearInterval(t);
+    if (i >= text.length) clearInterval(window.__titleTimer);
   }, 55);
 }
 
 const nameFromUrl = params.get("name") || "";
-if (nameFromUrl) {
-  nameInput.value = nameFromUrl;
-  titleEl.textContent = "Happy Holi, " + nameFromUrl + "!";
-} else {
-  typeTitle("Happy Holi!");
+const festivalFromUrl = params.get("festival") || "Holi";
+const messageFromUrl = params.get("message") || "";
+const themeFromUrl = params.get("theme") || "holi";
+
+if (festivalInput.querySelector(`option[value="${festivalFromUrl}"]`)) {
+  festivalInput.value = festivalFromUrl;
 }
+if (themeInput.querySelector(`option[value="${themeFromUrl}"]`)) {
+  themeInput.value = themeFromUrl;
+}
+if (nameFromUrl) nameInput.value = nameFromUrl;
+if (messageFromUrl) messageInput.value = messageFromUrl;
+updateFestivalUi();
+applyTheme(themeInput.value);
+updateTitle();
 
 if (params.get("spotify")) spotifyInput.value = params.get("spotify");
 if (params.get("song")) spotifyInput.value = params.get("song");
@@ -767,87 +1049,497 @@ spotifyInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") loadSpotify();
 });
 
+festivalInput.addEventListener("change", () => {
+  updateFestivalUi();
+  updateThoughtText();
+  updateTitle();
+  tickCountdown();
+  saveDraft();
+});
+themeInput.addEventListener("change", () => {
+  applyTheme(themeInput.value);
+  saveDraft();
+});
+nameInput.addEventListener("input", () => {
+  updateTitle();
+  saveDraft();
+});
+messageInput.addEventListener("input", saveDraft);
+spotifyInput.addEventListener("input", saveDraft);
+
+function updateTitle() {
+  const n = nameInput.value.trim();
+  const f = festivalInput.value || "Festival";
+  document.title = f + " Greeting | FestivalHub";
+  if (n) {
+    titleEl.textContent = "Happy " + f + ", " + n + "!";
+    return;
+  }
+  typeTitle("Create a " + f + " Greeting");
+}
+
+function updateFestivalUi() {
+  const f = festivalInput.value || "Holi";
+  festivalTag.textContent = f + " Edition";
+}
+
+function getFestivalThoughts() {
+  return THOUGHTS_BY_FESTIVAL[festivalInput.value] || THOUGHTS_BY_FESTIVAL.Holi;
+}
+
+function updateThoughtText() {
+  const thoughts = getFestivalThoughts();
+  thoughtEl.textContent = "\"" + thoughts[thoughtIndex % thoughts.length] + "\"";
+}
+
+function applyTheme(themeKey) {
+  const theme = THEME_MAP[themeKey] || THEME_MAP.holi;
+  document.documentElement.style.setProperty("--bg1", theme[0]);
+  document.documentElement.style.setProperty("--bg2", theme[1]);
+  document.documentElement.style.setProperty("--bg3", theme[2]);
+  document.documentElement.style.setProperty("--bg4", theme[3]);
+}
+
+function configureCreatorSection() {
+  const creditYearEl = document.getElementById("creditYear");
+  const githubEl = document.getElementById("creatorGithub");
+  const linkedinEl = document.getElementById("creatorLinkedin");
+  const emailEl = document.getElementById("creatorEmail");
+  if (creditYearEl) creditYearEl.textContent = String(new Date().getFullYear());
+
+  if (githubEl) {
+    if (CREATOR.github) githubEl.href = CREATOR.github;
+    else githubEl.style.display = "none";
+  }
+  if (linkedinEl) {
+    if (CREATOR.linkedin) linkedinEl.href = CREATOR.linkedin;
+    else linkedinEl.style.display = "none";
+  }
+  if (emailEl) {
+    if (CREATOR.email) emailEl.href = "mailto:" + CREATOR.email;
+    else emailEl.style.display = "none";
+  }
+}
+
+async function copyHomeLink() {
+  const base = getPublicWishBase();
+  const homeLink = base || window.location.origin;
+  if (!homeLink) return;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(homeLink);
+      shareStatus.textContent = "Site link copied: " + homeLink;
+      return;
+    }
+  } catch (_) {}
+  window.prompt("Copy this link", homeLink);
+}
+
 // ---------- Share link ----------
 const shareStatus = document.getElementById("shareStatus");
-const deployNote = document.getElementById("deployNote");
-
-if (window.location.protocol === "file:") {
-  deployNote.textContent = "Running as local file. API base: " + API_BASE_URL + " (start backend with: npm start).";
-} else {
-  deployNote.textContent = "Running from server: " + window.location.origin + " | API base: " + API_BASE_URL;
-}
+const statsLine = document.getElementById("statsLine");
+const recentWishesEl = document.getElementById("recentWishes");
+const recentFestivalFilter = document.getElementById("recentFestivalFilter");
+const recentSearchInput = document.getElementById("recentSearchInput");
+const DRAFT_KEY = "festivalhub_draft_v1";
+const ADMIN_PIN_KEY = "festivalhub_admin_pin";
 
 function sanitizeShareBase() {
   if (window.location.protocol === "file:") {
-    if (!DEPLOY_BASE_URL) return "";
-    return DEPLOY_BASE_URL;
+    return DEPLOY_BASE_URL || "";
   }
-  return window.location.href;
+  return window.location.origin;
 }
 
-function generateLink() {
+async function generateLink() {
   const base = sanitizeShareBase();
   if (!base) {
     shareStatus.textContent = "Set DEPLOY_BASE_URL after deploying to generate phone-safe links.";
-    alert("Deploy first, then set DEPLOY_BASE_URL in this file.");
     return;
   }
 
-  const url = new URL(base);
-  url.searchParams.delete("name");
-  url.searchParams.delete("spotify");
-  url.searchParams.delete("song");
+  const selectedFestival = festivalInput.value || "Holi";
+  const selectedName = nameInput.value.trim();
+  const selectedMessage = messageInput.value.trim() || ("Wishing you joy and success. Happy " + selectedFestival + (selectedName ? ", " + selectedName : "") + "!");
+  const payload = {
+    festival: selectedFestival,
+    friendName: selectedName,
+    message: selectedMessage,
+    music: spotifyInput.value.trim(),
+    theme: themeInput.value || "holi"
+  };
 
-  const n = nameInput.value.trim();
-  const s = spotifyInput.value.trim();
-
-  if (n) url.searchParams.set("name", n);
-  if (s) {
-    if (toSpotifyUri(s)) url.searchParams.set("spotify", s);
-    else url.searchParams.set("song", s);
-  }
-
-  const link = url.origin + url.pathname + (url.search ? url.search : "");
-
-  if (navigator.share) {
-    navigator.share({ title: "Holi Wish", text: "Open my Holi wish", url: link }).catch(() => {});
-  }
-
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(link).then(() => {
-      shareStatus.textContent = "Link copied: " + link;
-    }).catch(() => {
-      window.prompt("Copy this link", link);
-      shareStatus.textContent = "Copy manually from prompt.";
+  try {
+    const endpoint = new URL("/api/wishes", activeApiBase);
+    const res = await fetch(endpoint.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-  } else {
-    window.prompt("Copy this link", link);
-    shareStatus.textContent = "Copy manually from prompt.";
+    if (!res.ok) throw new Error("wish_create_failed");
+    const data = await res.json();
+    const finalBase = normalizeBase(base);
+    generatedShareLink = finalBase + "/wish/" + data.id;
+  } catch (_) {
+    const fallbackId = Math.random().toString(36).slice(2, 8);
+    const url = new URL(base + "/");
+    url.pathname = "/wish/" + fallbackId;
+    url.searchParams.set("festival", payload.festival);
+    if (payload.friendName) url.searchParams.set("name", payload.friendName);
+    if (payload.message) url.searchParams.set("message", payload.message);
+    if (payload.music) url.searchParams.set("song", payload.music);
+    if (payload.theme) url.searchParams.set("theme", payload.theme);
+    generatedShareLink = url.toString();
+  }
+
+  shareStatus.textContent = "Share link ready: " + generatedShareLink;
+  await copyShareLink();
+  refreshStats();
+  refreshRecentWishes();
+  saveDraft();
+}
+
+async function copyShareLink() {
+  if (!generatedShareLink) await generateLink();
+  if (!generatedShareLink) return;
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(generatedShareLink);
+      shareStatus.textContent = "Link copied: " + generatedShareLink;
+      return;
+    } catch (_) {}
+  }
+  window.prompt("Copy this link", generatedShareLink);
+}
+
+async function shareWhatsapp() {
+  if (!generatedShareLink) await generateLink();
+  if (!generatedShareLink) return;
+  const txt = encodeURIComponent("Check my FestivalHub greeting: " + generatedShareLink);
+  window.open("https://wa.me/?text=" + txt, "_blank");
+}
+
+async function shareInstagram() {
+  if (!generatedShareLink) await generateLink();
+  if (!generatedShareLink) return;
+  await copyShareLink();
+  window.open("https://www.instagram.com/", "_blank");
+  shareStatus.textContent = "Link copied. Paste it in Instagram bio/story.";
+}
+
+async function loadWishByPathIfNeeded() {
+  const match = window.location.pathname.match(/\/wish\/([a-zA-Z0-9_-]+)/);
+  if (!match) return;
+  const id = match[1];
+  try {
+    const endpoint = new URL("/api/wishes/" + encodeURIComponent(id), activeApiBase);
+    const res = await fetch(endpoint.toString());
+    if (!res.ok) return;
+    const data = await res.json();
+    festivalInput.value = data.festival || "Holi";
+    nameInput.value = data.friendName || "";
+    messageInput.value = data.message || "";
+    spotifyInput.value = data.music || "";
+    if (data.theme && themeInput.querySelector(`option[value="${data.theme}"]`)) {
+      themeInput.value = data.theme;
+      applyTheme(themeInput.value);
+    }
+    updateFestivalUi();
+    updateTitle();
+    generatedShareLink = window.location.origin + "/wish/" + id;
+    if (data.message) messageInput.value = data.message;
+  } catch (_) {}
+}
+
+async function refreshStats() {
+  try {
+    const endpoint = new URL("/api/stats", activeApiBase);
+    const res = await fetch(endpoint.toString());
+    if (!res.ok) return;
+    const data = await res.json();
+    statsLine.textContent = "Total wishes: " + Number(data.totalWishes || 0) + " | Total opens: " + Number(data.totalViews || 0);
+  } catch (_) {}
+}
+
+function getPublicWishBase() {
+  if (window.location.protocol === "file:") {
+    return normalizeBase(DEPLOY_BASE_URL || "");
+  }
+  return normalizeBase(window.location.origin);
+}
+
+function publicWishLink(id) {
+  const base = getPublicWishBase();
+  if (!base) return "";
+  return base + "/wish/" + id;
+}
+
+function fmtShortDate(iso) {
+  const d = new Date(iso || Date.now());
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString();
+}
+
+function renderRecentWishes(items) {
+  if (!recentWishesEl) return;
+  if (!items || !items.length) {
+    recentWishesEl.innerHTML = "<div class=\"meta-line\">No wishes yet. Create one to see it here.</div>";
+    return;
+  }
+  recentWishesEl.innerHTML = "";
+  items.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "recent-item";
+    const main = document.createElement("div");
+    main.className = "recent-main";
+    const titleElx = document.createElement("div");
+    titleElx.className = "recent-title";
+    const subMsg = document.createElement("div");
+    subMsg.className = "recent-sub";
+    const subDate = document.createElement("div");
+    subDate.className = "recent-sub";
+    const subViews = document.createElement("div");
+    subViews.className = "recent-sub";
+    const actions = document.createElement("div");
+    actions.className = "recent-actions";
+    const openBtn = document.createElement("button");
+    openBtn.dataset.action = "open";
+    openBtn.dataset.id = item.id;
+    openBtn.textContent = "Open";
+    const copyBtn = document.createElement("button");
+    copyBtn.dataset.action = "copy";
+    copyBtn.dataset.id = item.id;
+    copyBtn.textContent = "Copy";
+    const deleteBtn = document.createElement("button");
+    deleteBtn.dataset.action = "delete";
+    deleteBtn.dataset.id = item.id;
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "danger-btn";
+
+    const title = (item.festival || "Festival") + (item.friendName ? (" for " + item.friendName) : "");
+    const messageSnippet = (item.message || "").slice(0, 60);
+    titleElx.textContent = title;
+    subMsg.textContent = messageSnippet + (messageSnippet.length === 60 ? "..." : "");
+    subDate.textContent = fmtShortDate(item.createdAt);
+    subViews.textContent = "Opens: " + Number(item.views || 0);
+
+    actions.appendChild(openBtn);
+    actions.appendChild(copyBtn);
+    actions.appendChild(deleteBtn);
+    main.appendChild(titleElx);
+    main.appendChild(subMsg);
+    main.appendChild(subViews);
+    main.appendChild(subDate);
+    row.appendChild(main);
+    row.appendChild(actions);
+    recentWishesEl.appendChild(row);
+  });
+}
+
+async function refreshRecentWishes() {
+  try {
+    const endpoint = new URL("/api/wishes", activeApiBase);
+    endpoint.searchParams.set("limit", "5");
+    if (recentFestivalFilter && recentFestivalFilter.value) {
+      endpoint.searchParams.set("festival", recentFestivalFilter.value);
+    }
+    const q = (recentSearchInput && recentSearchInput.value || "").trim();
+    if (q) endpoint.searchParams.set("q", q);
+    const res = await fetch(endpoint.toString());
+    if (!res.ok) return;
+    const data = await res.json();
+    renderRecentWishes(data.items || []);
+  } catch (_) {}
+}
+
+if (recentWishesEl) {
+  recentWishesEl.addEventListener("click", async (e) => {
+    const target = e.target;
+    if (!target || !target.dataset) return;
+    const action = target.dataset.action || "";
+    const id = target.dataset.id || "";
+    if (!action || !id) return;
+    const link = publicWishLink(id);
+    if (!link) return;
+    if (action === "open") {
+      window.open(link, "_blank");
+      return;
+    }
+    if (action === "copy") {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(link);
+          shareStatus.textContent = "Recent wish link copied: " + link;
+        } else {
+          window.prompt("Copy this link", link);
+        }
+      } catch (_) {}
+      return;
+    }
+    if (action === "delete") {
+      const ok = window.confirm("Delete this wish?");
+      if (!ok) return;
+      let adminPin = getAdminPinFromSession();
+      if (!adminPin) {
+        adminPin = (window.prompt("Enter admin PIN to delete this wish") || "").trim();
+      }
+      if (!adminPin) {
+        shareStatus.textContent = "Delete cancelled: admin PIN required.";
+        return;
+      }
+      try {
+        const endpoint = new URL("/api/wishes/" + encodeURIComponent(id), activeApiBase);
+        const res = await fetch(endpoint.toString(), {
+          method: "DELETE",
+          headers: { "X-Admin-Pin": adminPin }
+        });
+        if (res.status === 401) {
+          setAdminPinInSession("");
+          shareStatus.textContent = "Invalid admin PIN.";
+          return;
+        }
+        if (!res.ok) return;
+        setAdminPinInSession(adminPin);
+        shareStatus.textContent = "Wish deleted.";
+        await refreshRecentWishes();
+        await refreshStats();
+      } catch (_) {}
+    }
+  });
+}
+
+if (recentFestivalFilter) {
+  recentFestivalFilter.addEventListener("change", refreshRecentWishes);
+}
+if (recentSearchInput) {
+  recentSearchInput.addEventListener("input", () => {
+    clearTimeout(window.__recentSearchTimer);
+    window.__recentSearchTimer = setTimeout(() => {
+      refreshRecentWishes();
+    }, 220);
+  });
+}
+
+function saveDraft() {
+  try {
+    const draft = {
+      friendName: nameInput.value || "",
+      festival: festivalInput.value || "Holi",
+      message: messageInput.value || "",
+      music: spotifyInput.value || "",
+      theme: themeInput.value || "holi"
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch (_) {}
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch (_) {}
+  nameInput.value = "";
+  messageInput.value = "";
+  spotifyInput.value = "";
+  festivalInput.value = "Holi";
+  themeInput.value = "holi";
+  applyTheme("holi");
+  updateFestivalUi();
+  updateTitle();
+  updateThoughtText();
+  tickCountdown();
+  shareStatus.textContent = "Draft cleared.";
+}
+
+function getAdminPinFromSession() {
+  try {
+    return sessionStorage.getItem(ADMIN_PIN_KEY) || "";
+  } catch (_) {
+    return "";
+  }
+}
+
+function setAdminPinInSession(pin) {
+  try {
+    sessionStorage.setItem(ADMIN_PIN_KEY, pin || "");
+  } catch (_) {}
+}
+
+function restoreDraftIfNeeded() {
+  const hasPreset =
+    !!params.get("name") ||
+    !!params.get("message") ||
+    !!params.get("festival") ||
+    !!params.get("song") ||
+    !!params.get("spotify") ||
+    /\/wish\/[a-zA-Z0-9_-]+/.test(window.location.pathname);
+  if (hasPreset) return;
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    if (!draft || typeof draft !== "object") return;
+    if (draft.friendName) nameInput.value = String(draft.friendName);
+    if (draft.message) messageInput.value = String(draft.message);
+    if (draft.music) spotifyInput.value = String(draft.music);
+    if (draft.festival && festivalInput.querySelector(`option[value="${draft.festival}"]`)) {
+      festivalInput.value = draft.festival;
+    }
+    if (draft.theme && themeInput.querySelector(`option[value="${draft.theme}"]`)) {
+      themeInput.value = draft.theme;
+      applyTheme(themeInput.value);
+    }
+    updateFestivalUi();
+    updateTitle();
+    tickCountdown();
+  } catch (_) {}
+}
+
+async function generateAiMessage() {
+  const festival = festivalInput.value || "Holi";
+  const friendName = nameInput.value.trim();
+  const prompt = "Generate a warm " + festival + " greeting message" + (friendName ? (" for " + friendName) : "");
+  try {
+    const endpoint = new URL("/api/ai/greeting", activeApiBase);
+    const res = await fetch(endpoint.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, festival, friendName })
+    });
+    if (!res.ok) throw new Error("ai_failed");
+    const data = await res.json();
+    messageInput.value = data.message || "";
+    thoughtEl.textContent = "\"" + (data.message || "Wishing you joy and success.") + "\"";
+  } catch (_) {
+    const fallback = "Wishing you joy, peace, and success. Happy " + festival + (friendName ? ", " + friendName : "") + "!";
+    messageInput.value = fallback;
+    thoughtEl.textContent = "\"" + fallback + "\"";
   }
 }
 
 // ---------- Countdown ----------
-function nextHoliTs() {
+function nextFestivalTs(festival) {
+  const calendar = FESTIVAL_DATES[festival] || FESTIVAL_DATES.Holi;
   const now = new Date();
   let year = now.getFullYear();
-  while (!HOLI_DATES[year] || new Date(HOLI_DATES[year]) <= now) year += 1;
-  return new Date(HOLI_DATES[year]).getTime();
+  while (!calendar[year] || new Date(calendar[year]) <= now) year += 1;
+  return new Date(calendar[year]).getTime();
 }
 
-const holiTime = nextHoliTs();
 const countdownEl = document.getElementById("countdown");
 
 function tickCountdown() {
-  const gap = holiTime - Date.now();
+  const festival = festivalInput.value || "Holi";
+  const eventTime = nextFestivalTs(festival);
+  const gap = eventTime - Date.now();
   if (gap <= 0) {
-    countdownEl.textContent = "Its Holi today!";
+    countdownEl.textContent = "It's " + festival + " today!";
     return;
   }
   const d = Math.floor(gap / (1000 * 60 * 60 * 24));
   const h = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const m = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
   const s = Math.floor((gap % (1000 * 60)) / 1000);
-  countdownEl.textContent = "Next Holi in " + d + "d " + h + "h " + m + "m " + s + "s";
+  countdownEl.textContent = "Next " + festival + " in: " + d + "d " + h + "h " + m + "m " + s + "s";
 }
 setInterval(tickCountdown, 1000);
 tickCountdown();
@@ -855,9 +1547,11 @@ tickCountdown();
 // ---------- Rotating thought ----------
 const thoughtEl = document.getElementById("thought");
 let thoughtIndex = 0;
+updateThoughtText();
 setInterval(() => {
-  thoughtEl.textContent = "\"" + THOUGHTS[thoughtIndex] + "\"";
-  thoughtIndex = (thoughtIndex + 1) % THOUGHTS.length;
+  const thoughts = getFestivalThoughts();
+  thoughtEl.textContent = "\"" + thoughts[thoughtIndex % thoughts.length] + "\"";
+  thoughtIndex += 1;
 }, 3500);
 
 // ---------- Music player ----------
@@ -929,7 +1623,7 @@ function setFallbackSource(i) {
   audio.load();
   if (i === 0) musicTrack.textContent = "Festival Stream Track";
   else if (i === 1) musicTrack.textContent = "Backup Festival Track";
-  else musicTrack.textContent = "Local Holi Mix";
+  else musicTrack.textContent = "Local Festival Mix";
   musicStatus.textContent = "Track loaded";
   setSongLabel(musicTrack.textContent, "Loaded and ready", i === 0 ? "Stream" : (i === 1 ? "Backup" : "Local Mix"));
   seekBar.value = 0;
@@ -1004,7 +1698,6 @@ const spotifyControls = document.getElementById("spotifyControls");
 const spotifyResults = document.getElementById("spotifyResults");
 const backendPill = document.getElementById("backendPill");
 const spotifySearchBtn = document.getElementById("spotifySearchBtn");
-const spotifyCheckBtn = document.getElementById("spotifyCheckBtn");
 const ctlPlay = document.getElementById("ctlPlay");
 const ctlPause = document.getElementById("ctlPause");
 const ctlToggle = document.getElementById("ctlToggle");
@@ -1033,7 +1726,6 @@ function setFallbackOnlyMode(reason) {
   setBackendPill("warn", "Fallback-only mode");
   spotifyStatus.textContent = reason || "API unavailable. Using in-app fallback search mode.";
   spotifySearchBtn.textContent = "Search and Play";
-  spotifyCheckBtn.style.display = "inline-block";
   syncMusicControls();
 }
 
@@ -1041,7 +1733,6 @@ function setApiMode() {
   spotifyFallbackOnly = false;
   spotifyResults.style.display = "grid";
   spotifySearchBtn.textContent = "Search and Play";
-  spotifyCheckBtn.style.display = "inline-block";
   syncMusicControls();
 }
 
@@ -1630,6 +2321,11 @@ if (params.get("spotify")) {
   loadSpotify();
 }
 checkSpotifyBackendHealth();
+restoreDraftIfNeeded();
+loadWishByPathIfNeeded();
+configureCreatorSection();
+refreshStats();
+refreshRecentWishes();
 
 // ---------- Confetti particle effect ----------
 const canvas = document.getElementById("fx");
@@ -1655,6 +2351,25 @@ function spawnParticles(x, y, count = 26) {
       life: 1
     });
   }
+}
+
+function colorSplashAnimation() {
+  for (let i = 0; i < 7; i++) {
+    setTimeout(() => {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.8;
+      spawnParticles(x, y, 70);
+    }, i * 160);
+  }
+}
+
+function confettiRain() {
+  let drops = 0;
+  const timer = setInterval(() => {
+    drops += 1;
+    spawnParticles(Math.random() * canvas.width, -8, 8);
+    if (drops > 90) clearInterval(timer);
+  }, 50);
 }
 
 document.addEventListener("click", (e) => spawnParticles(e.clientX, e.clientY, 24));
@@ -1693,6 +2408,12 @@ function fireworks() {
     }, i * 240);
   }
 }
+
+window.addEventListener("load", () => {
+  colorSplashAnimation();
+  confettiRain();
+  setTimeout(() => fireworks(), 350);
+});
 
 // ---------- Download wish card ----------
 function downloadImage() {
