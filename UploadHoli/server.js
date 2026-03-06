@@ -8,7 +8,7 @@ const fetchImpl = global.fetch || require("node-fetch");
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
-const WISHES_FILE = path.join(__dirname, "wishes.json");
+const WISHES_FILE = path.resolve(process.env.WISHES_FILE || path.join(__dirname, "wishes.json"));
 const wishesStore = new Map();
 const ADMIN_PIN = (process.env.ADMIN_PIN || "19102006").trim();
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000);
@@ -231,6 +231,7 @@ function loadWishesFromDisk() {
 
 function persistWishesToDisk() {
   try {
+    fs.mkdirSync(path.dirname(WISHES_FILE), { recursive: true });
     const data = JSON.stringify(Array.from(wishesStore.values()), null, 2);
     fs.writeFileSync(WISHES_FILE, data, "utf8");
   } catch (_) {}
